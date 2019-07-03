@@ -4,8 +4,8 @@
 
 <head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
-    <meta name="keywords" content="Hello World, 博客 Java 开发">
-    <meta name="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hex">
+    <meta name="keywords" content="定时任务中getBean踩坑, 博客 Java 开发">
+    <meta name="description" content="2019-07-03在进行开发时，需要在定时任务中调用service层进行任务处理。因为TimerTask类并没有兼容Spring框架，所以无法使用Autowired进行注入。因为注入的话，@Autowired时候报空指针。所以只能使用最原">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -13,7 +13,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Hello World | BARZN的个人博客</title>
+    <title>定时任务中getBean踩坑 | BARZN的个人博客</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
@@ -260,13 +260,13 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/12.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/13.jpg')">
     <div class="container">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
                     <div class="description center-align post-title">
-                        Hello World
+                        定时任务中getBean踩坑
                     </div>
                 </div>
             </div>
@@ -375,12 +375,25 @@
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/日常工作/" target="_blank">
+                                <span class="chip bg-color">日常工作</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fa fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/Java/" class="post-category" target="_blank">
+                                Java
+                            </a>
+                        
+                    </div>
                     
                 </div>
             </div>
@@ -388,7 +401,7 @@
             <div class="post-info">
                 <div class="post-date info-break-policy">
                     <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2019-07-01
+                    2019-07-03
                 </div>
 
                 
@@ -404,19 +417,154 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
+                <p>2019-07-03<br>在进行开发时，需要在定时任务中调用service层进行任务处理。因为TimerTask类并没有兼容Spring框架，所以无法使用Autowired进行注入。因为注入的话，@Autowired时候报空指针。所以只能使用最原始的方法，通过getbean注入，拿到service层。具体代码如下:<br>1.SpringContextUtil类代码：</p>
+<p>public class SpringContextUtil implements ApplicationContextAware {</p>
+<pre><code>private static ApplicationContext applicationContext; // Spring应用上下文环境
 
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+/**
+ * 实现ApplicationContextAware接口的回调方法，设置上下文环境
+ * 
+ * @param applicationContext
+ * @throws BeansException
+ */
+public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    SpringContextUtil.applicationContext = applicationContext;
+}
 
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+/**
+ * @return ApplicationContext
+ */
+public static ApplicationContext getApplicationContext() {
+    return applicationContext;
+}
 
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+/**
+ * 获取对象
+ * 
+ * @param name
+ * @return Object 一个以所给名字注册的bean的实例
+ * @throws BeansException
+ */
+public static Object getBean(String name) throws BeansException {
+    return applicationContext.getBean(name);
+}
 
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+/**
+ * 获取类型为requiredType的对象
+ * 如果bean不能被类型转换，相应的异常将会被抛出（BeanNotOfRequiredTypeException）
+ * 
+ * @param name
+ *            bean注册名
+ * @param requiredType
+ *            返回对象类型
+ * @return Object 返回requiredType类型对象
+ * @throws BeansException
+ */
+@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
+public static Object getBean(String name, Class requiredType) throws BeansException {
+    return applicationContext.getBean(name, requiredType);
+}
+
+/**
+ * 如果BeanFactory包含一个与所给名称匹配的bean定义，则返回true
+ * 
+ * @param name
+ * @return boolean
+ */
+public static boolean containsBean(String name) {
+    return applicationContext.containsBean(name);
+}
+
+/**
+ * 判断以给定名字注册的bean定义是一个singleton还是一个prototype。
+ * 如果与给定名字相应的bean定义没有被找到，将会抛出一个异常（NoSuchBeanDefinitionException）
+ * 
+ * @param name
+ * @return boolean
+ * @throws NoSuchBeanDefinitionException
+ */
+public static boolean isSingleton(String name) throws NoSuchBeanDefinitionException {
+    return applicationContext.isSingleton(name);
+}
+
+/**
+ * @param name
+ * @return Class 注册对象的类型
+ * @throws NoSuchBeanDefinitionException
+ */
+@SuppressWarnings(&quot;rawtypes&quot;)
+public static Class getType(String name) throws NoSuchBeanDefinitionException {
+    return applicationContext.getType(name);
+}
+
+/**
+ * 如果给定的bean名字在bean定义中有别名，则返回这些别名
+ * 
+ * @param name
+ * @return
+ * @throws NoSuchBeanDefinitionException
+ */
+public static String[] getAliases(String name) throws NoSuchBeanDefinitionException {
+    return applicationContext.getAliases(name);
+}</code></pre><p>}</p>
+<p>2.业务中的设备更新任务:DeviceUpdateTimerTask<br>这个类继承了TimeTask，重写了run方法，也就把业务写在这个方法里，代码如下:<br>public class DeviceUpdateTimerTask extends TimerTask {<br>    public static final Logger logger = LoggerFactory.getLogger(DeviceUpdateTimerTask.class);<br>    public static final int Visitor_Expire = 0;<br>    public static final int Visitor_Valid = 1;<br>    public static final int Human_InActive = 0;<br>    public static final int Human_Active = 1;<br>    public static final int Human_Prepare = 2;</p>
+<pre><code>@Override
+public void run() {
+    VisitorService visitorService = (VisitorService) SpringContextUtil.getBean(&quot;visitorServiceImpl&quot;);
+    CloudSideClientManager cloudSideClientManager = (CloudSideClientManager) SpringContextUtil
+            .getBean(&quot;cloudSideClientManager&quot;);
+    HumanService humanService = (HumanService) SpringContextUtil.getBean(&quot;humanServiceImp&quot;);
+    DeviceService deviceService = (DeviceService) SpringContextUtil.getBean(&quot;deviceServiceImp&quot;);
+
+
+    try {
+        // 这个判断是用老方法@Autowired注入的时候 报空指针 测试的时候在这儿判断了一下 是因为service空 没有成功注入
+        // 所有service/dao注入需要SpringContextUtil.getBean才可以
+        if (visitorService == null) {
+            logger.error(&quot;&gt;&gt;&gt;&gt;ERROR:visitorService为null,无法更新&gt;&gt;&gt;&gt;&quot;);
+            throw new NotFoundException(&quot;VisitorService为null,无法执行访客状态定时更新任务&quot;);
+        }
+        if (humanService == null) {
+            logger.error(&quot;&gt;&gt;&gt;&gt;ERROR:humanService为null,无法更新&gt;&gt;&gt;&gt;&quot;);
+            throw new NotFoundException(&quot;HumanService为null,无法执行人员状态定时更新任务&quot;);
+        }
+        if (cloudSideClientManager == null) {
+            logger.error(&quot;&gt;&gt;&gt;&gt;ERROR:cloudSideClientManager为null,无法更新&gt;&gt;&gt;&gt;&quot;);
+            throw new NotFoundException(&quot;CloudSideClientManager为null,无法执行设备更新任务&quot;);
+        }
+        if (deviceService == null) {
+            logger.error(&quot;&gt;&gt;&gt;&gt;ERROR:deviceService为null,无法更新&gt;&gt;&gt;&gt;&quot;);
+            throw new NotFoundException(&quot;DeviceService为null,无法获取设备序列号&quot;);
+        }
+
+        // 1.更新过期访客
+        Map&lt;String, Object&gt; map = new HashMap&lt;&gt;();
+        map.put(&quot;visitStatus&quot;, Visitor_Expire);
+        boolean boo = visitorService.updateExpireVisitor(map);
+        logger.info(&quot;&gt;&gt;&gt;&gt;INFO:访客状态更新&gt;&gt;&gt;&gt;:&quot; + (boo ? &quot;成功&quot; : &quot;失败&quot;));
+        // 2.修改人员状态(humanStatus为2并且开通时间小于当前时间)修改状态为1
+        Map&lt;String, Object&gt; mp = new HashMap&lt;&gt;();
+        mp.put(&quot;humanStatus&quot;, Human_Active);
+        boolean bool = humanService.updatePrepareHuman(mp);
+        logger.info(&quot;&gt;&gt;&gt;&gt;INFO:人员状态更新&gt;&gt;&gt;&gt;:&quot; + (bool ? &quot;成功&quot; : &quot;失败&quot;));
+        // 3.下发指令让所有设备更新
+        //查询所有在线的设备--getOnlineDeviceList
+        List&lt;String&gt; serialList = deviceService.getOnlineDeviceAll();
+        for (String serial : serialList) {
+            cloudSideClientManager.clientRegister(serial,&quot;127.0.0.1&quot;, 50053);
+            // 2.调用通讯接口让区域内设备更新
+            CloudSideClientProxy ccp =cloudSideClientManager.getClient(serial);
+            List&lt;Person&gt; personList = deviceService.getPermissionPersonByDevice(serial);
+            if (ccp == null) {
+                logger.error(&quot;&gt;&gt;&gt;&gt;ERROR:序列号为&quot;+serial+&quot;的设备未上线!&gt;&gt;&gt;&gt;&quot;);
+                throw new DeviceOfflineException(&quot;序列号为&quot;+serial+&quot;的设备未上线!&quot;);
+            }
+            ccp.permissionUpdateAll(personList);
+        }
+    } catch (Exception e) {
+        logger.error(&quot;&gt;&gt;&gt;&gt;ERROR:解析信息发生异常&gt;&gt;&gt;&gt;&quot;);
+    }
+}</code></pre><p>}<br>当然，也需要在application中添加bean：<br>    <bean id="springContextUtil" class="com.rh.quartz.SpringContextUtil" autowire="byName" lazy-init="false"></bean><br>这样就可以进行业务逻辑调用咯….</p>
 
             </div>
             <hr/>
@@ -575,9 +723,9 @@
             <br/>
             <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text"
                   property="dct:title" rel="dct:type">
-                    《Hello World》
+                    《定时任务中getBean踩坑》
                 </span> 由
-            <a xmlns:cc="http://creativecommons.org/ns#" href="/2019/07/01/hello-world/" property="cc:attributionName"
+            <a xmlns:cc="http://creativecommons.org/ns#" href="/2019/07/04/定时任务中getBean踩坑/" property="cc:attributionName"
                rel="cc:attributionURL">
                 Joe Peng
             </a> 采用
@@ -617,37 +765,50 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="fa fa-dot-circle-o"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2019/07/03/测试篇_20190702/">
+                <a href="/2019/07/04/定时任务中getBean踩坑/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/1.jpg" class="responsive-img" alt="newpapername">
+                        <img src="/medias/featureimages/13.jpg" class="responsive-img" alt="定时任务中getBean踩坑">
                         
-                        <span class="card-title">newpapername</span>
+                        <span class="card-title">定时任务中getBean踩坑</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            这是我的第一篇博客，又名helloworld，仅供测试！
-
+                            2019-07-03在进行开发时，需要在定时任务中调用service层进行任务处理。因为TimerTask类并没有兼容Spring框架，所以无法使用Autowired进行注入。因为注入的话，@Autowired时候报空指针。所以只能使用最原
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="fa fa-clock-o fa-fw icon-date"></i>2019-07-02
-                        </span>
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2019-07-03
+                            </span>
                         <span class="publish-author">
                             
-                            <i class="fa fa-user fa-fw"></i>
-                            Joe Peng
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Java/" class="post-category" target="_blank">
+                                    Java
+                                </a>
+                            
                             
                         </span>
                     </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/日常工作/" target="_blank">
+                        <span class="chip bg-color">日常工作</span>
+                    </a>
+                    
                 </div>
                 
             </div>
@@ -656,37 +817,48 @@
         
         <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge right-badge text-color">
-                本篇&nbsp;<i class="fa fa-dot-circle-o"></i>
+                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2019/07/01/hello-world/">
+                <a href="/2019/06/26/定时任务TimeTask/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="Hello World">
+                        <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="定时任务TimeTask">
                         
-                        <span class="card-title">Hello World</span>
+                        <span class="card-title">定时任务TimeTask</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hex
+                            2019-06-25最近开发工作中，需要用到定时任务这一块，专门去研究了一下。目前网上给出的方案大体有两种，一种是用Quartz配合Spring框架来实现，还有一种主要依靠TimerTask类来解决。大体对比了一下，我觉得Quartz更适合
                         
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2019-07-01
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2019-06-25
                             </span>
                         <span class="publish-author">
                             
-                            <i class="fa fa-user fa-fw"></i>
-                            Joe Peng
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Java/" class="post-category" target="_blank">
+                                    Java
+                                </a>
+                            
                             
                         </span>
                     </div>
                 </div>
-
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/日常工作/" target="_blank">
+                        <span class="chip bg-color">日常工作</span>
+                    </a>
+                    
+                </div>
                 
             </div>
         </div>
