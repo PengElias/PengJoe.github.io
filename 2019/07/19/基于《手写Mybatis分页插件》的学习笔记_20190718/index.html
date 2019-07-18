@@ -4,8 +4,10 @@
 
 <head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
-    <meta name="keywords" content="定时任务中getBean踩坑, 博客 Java 开发">
-    <meta name="description" content="2019-07-03在进行开发时，需要在定时任务中调用service层进行任务处理。因为TimerTask类并没有兼容Spring框架，所以无法使用Autowired进行注入。因为注入的话，@Autowired时候报空指针。所以只能使用最原">
+    <meta name="keywords" content="基于《手写Mybatis分页插件》的学习笔记, 博客 Java 开发">
+    <meta name="description" content="2019-07-18Mybatis基础：接口-&amp;gt;xml select update方法-&amp;gt;标签底层：动态代理，接口不能new，生成对应的具体实现类
+Mybatis三层：接口层，数据处理层，框架支撑层，引导层
+接口层：增删改查接口">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -13,7 +15,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>定时任务中getBean踩坑 | BARZN的个人博客</title>
+    <title>基于《手写Mybatis分页插件》的学习笔记 | BARZN的个人博客</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
@@ -260,13 +262,13 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/13.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/17.jpg')">
     <div class="container">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
                     <div class="description center-align post-title">
-                        定时任务中getBean踩坑
+                        基于《手写Mybatis分页插件》的学习笔记
                     </div>
                 </div>
             </div>
@@ -377,8 +379,8 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/日常工作/" target="_blank">
-                                <span class="chip bg-color">日常工作</span>
+                            <a href="/tags/学习/" target="_blank">
+                                <span class="chip bg-color">学习</span>
                             </a>
                         
                     </div>
@@ -401,7 +403,7 @@
             <div class="post-info">
                 <div class="post-date info-break-policy">
                     <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2019-07-03
+                    2019-07-18
                 </div>
 
                 
@@ -417,154 +419,221 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>2019-07-03<br>在进行开发时，需要在定时任务中调用service层进行任务处理。因为TimerTask类并没有兼容Spring框架，所以无法使用Autowired进行注入。因为注入的话，@Autowired时候报空指针。所以只能使用最原始的方法，通过getbean注入，拿到service层。具体代码如下:<br>1.SpringContextUtil类代码：</p>
-<p>public class SpringContextUtil implements ApplicationContextAware {</p>
-<pre><code>private static ApplicationContext applicationContext; // Spring应用上下文环境
+                <p>2019-07-18<br>Mybatis基础：<br>接口-&gt;xml select update<br>方法-&gt;标签<br>底层：动态代理，接口不能new，生成对应的具体实现类</p>
+<p>Mybatis三层：接口层，数据处理层，框架支撑层，引导层</p>
+<p>接口层：增删改查接口、配置信息维护接口<br>    接口调用方式：<br>    1.基于StatementID<br>    2.基于Mapper接口<br>数据处理层：<br>    1.参数映射(ParameterHandler)：参数映射配置、参数映射解析、参数类型解析<br>    2.SQL解析(SqlSource)：sql语句配置、sql语句解析、sql语句动态生成<br>    3.SQL执行(Executor)：SimpleExecutor执行器、BatchExecutor、ReuseExecutor<br>    4.结果处理和映射(ResultHandler)：结果映射配置、结果类型转换<br>框架支撑层：<br>    1.SQL语句配置方式：基于XML配置、基于注解<br>    2.事务管理<br>    3.连接池管理<br>    4.缓存机制<br>引导层：<br>    1.基于XML配置方式<br>    2.基于Java API方式<br>Mybatis执行流程：<br><img src="https://i.imgur.com/lAJMGQy.png" alt="Mybatis执行流程"></p>
+<p>Mybatis插件机制：<br>Mybatis插件又称为拦截器，常说的拦截器实质上都是插件。Mybatis采用责任链模式，通过动态代理组织多个插件，通过这些插件可以改变Mybatis的默认行为（比如重写sql语句，就是在插件中对原始sql进行拦截，在插件中进行修改，处理完成后再返回到主流程）<br><img src="https://i.imgur.com/5OVMa9R.png" alt="Mybatis插件机制"><br>插件只能在Executor、ParameterHandler、ResultSetHandler和StatementHandler这四个执行器之中插入。如果在ResultSetHandler在添加插件，只能对数据库响应结果进行二次封装，出于安全性考虑。</p>
+<p>分页插件代码如下:<br>1.Mybatis的配置文件加上这一句<br><plugins><br><plugin interceptor="MyInterceptor"><br></plugin><br></plugins><br>2.核心拦截类</p>
+<p>@Intercepts(<br>        @Signature(<br>                type = StatementHandler.class,<br>                method = “prepare”,<br>                args = { Collection.class }))<br>public class MyInterceptor implements Interceptor {</p>
+<pre><code>private final Logger logger = LoggerFactory.getLogger(MyInterceptor.class);
 
 /**
- * 实现ApplicationContextAware接口的回调方法，设置上下文环境
- * 
- * @param applicationContext
- * @throws BeansException
+ * 插件运行的代码，它将代替原有的方法，重写最重要的intercept方法
  */
-public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    SpringContextUtil.applicationContext = applicationContext;
-}
+@Override
+public Object intercept(Invocation invocation) throws Throwable {
+    if (invocation.getTarget() instanceof StatementHandler) {
+        // 这里我们有一个设定 如果查询方法含有Page 就进行分页 其他方法无视
+        // 所以就要获取方法名
+        StatementHandler statementHandler = (StatementHandler) invocation.getTarget();
+        MetaObject metaObject = SystemMetaObject.forObject(statementHandler);
+        MappedStatement mappedStatement = (MappedStatement) metaObject.getValue(&quot;delegate.mappedStatement&quot;);
+        String selectId = mappedStatement.getId();
+        //筛选依Page结尾的方法
+        if (selectId.matches(&quot;.*Page$&quot;)) {
+            BoundSql boundSql = (BoundSql) metaObject.getValue(&quot;delegate.BoundSql&quot;);
+            String sql = boundSql.getSql();
+            //获取分页参数
+            HashMap&lt;String, Object&gt; hashMap = (HashMap&lt;String, Object&gt;) (boundSql.getParameterObject());
+            PageInfo myPage = (PageInfo) hashMap.get(&quot;page&quot;);
+            // 改造SQL语句
+            String countSql = &quot;select count(0) from &quot; + sql;
+            String pageSql = sql + &quot;limit &quot; + myPage.getPageBegin() + &quot;,&quot; + myPage.getPageSize();
 
-/**
- * @return ApplicationContext
- */
-public static ApplicationContext getApplicationContext() {
-    return applicationContext;
-}
+            Connection connection = (Connection) invocation.getArgs()[0];
 
-/**
- * 获取对象
- * 
- * @param name
- * @return Object 一个以所给名字注册的bean的实例
- * @throws BeansException
- */
-public static Object getBean(String name) throws BeansException {
-    return applicationContext.getBean(name);
-}
+            PreparedStatement cStatement = null;
+            ResultSet rs = null;
+            int totalCount = 0;
+            try {
+                cStatement = connection.prepareStatement(countSql);
 
-/**
- * 获取类型为requiredType的对象
- * 如果bean不能被类型转换，相应的异常将会被抛出（BeanNotOfRequiredTypeException）
- * 
- * @param name
- *            bean注册名
- * @param requiredType
- *            返回对象类型
- * @return Object 返回requiredType类型对象
- * @throws BeansException
- */
-@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-public static Object getBean(String name, Class requiredType) throws BeansException {
-    return applicationContext.getBean(name, requiredType);
-}
-
-/**
- * 如果BeanFactory包含一个与所给名称匹配的bean定义，则返回true
- * 
- * @param name
- * @return boolean
- */
-public static boolean containsBean(String name) {
-    return applicationContext.containsBean(name);
-}
-
-/**
- * 判断以给定名字注册的bean定义是一个singleton还是一个prototype。
- * 如果与给定名字相应的bean定义没有被找到，将会抛出一个异常（NoSuchBeanDefinitionException）
- * 
- * @param name
- * @return boolean
- * @throws NoSuchBeanDefinitionException
- */
-public static boolean isSingleton(String name) throws NoSuchBeanDefinitionException {
-    return applicationContext.isSingleton(name);
-}
-
-/**
- * @param name
- * @return Class 注册对象的类型
- * @throws NoSuchBeanDefinitionException
- */
-@SuppressWarnings(&quot;rawtypes&quot;)
-public static Class getType(String name) throws NoSuchBeanDefinitionException {
-    return applicationContext.getType(name);
-}
-
-/**
- * 如果给定的bean名字在bean定义中有别名，则返回这些别名
- * 
- * @param name
- * @return
- * @throws NoSuchBeanDefinitionException
- */
-public static String[] getAliases(String name) throws NoSuchBeanDefinitionException {
-    return applicationContext.getAliases(name);
-}</code></pre><p>}</p>
-<p>2.业务中的设备更新任务:DeviceUpdateTimerTask<br>这个类继承了TimeTask，重写了run方法，也就把业务写在这个方法里，代码如下:<br>public class DeviceUpdateTimerTask extends TimerTask {<br>    public static final Logger logger = LoggerFactory.getLogger(DeviceUpdateTimerTask.class);<br>    public static final int Visitor_Expire = 0;<br>    public static final int Visitor_Valid = 1;<br>    public static final int Human_InActive = 0;<br>    public static final int Human_Active = 1;<br>    public static final int Human_Prepare = 2;</p>
-<pre><code>@Override
-public void run() {
-    VisitorService visitorService = (VisitorService) SpringContextUtil.getBean(&quot;visitorServiceImpl&quot;);
-    CloudSideClientManager cloudSideClientManager = (CloudSideClientManager) SpringContextUtil
-            .getBean(&quot;cloudSideClientManager&quot;);
-    HumanService humanService = (HumanService) SpringContextUtil.getBean(&quot;humanServiceImp&quot;);
-    DeviceService deviceService = (DeviceService) SpringContextUtil.getBean(&quot;deviceServiceImp&quot;);
-
-
-    try {
-        // 这个判断是用老方法@Autowired注入的时候 报空指针 测试的时候在这儿判断了一下 是因为service空 没有成功注入
-        // 所有service/dao注入需要SpringContextUtil.getBean才可以
-        if (visitorService == null) {
-            logger.error(&quot;&gt;&gt;&gt;&gt;ERROR:visitorService为null,无法更新&gt;&gt;&gt;&gt;&quot;);
-            throw new NotFoundException(&quot;VisitorService为null,无法执行访客状态定时更新任务&quot;);
-        }
-        if (humanService == null) {
-            logger.error(&quot;&gt;&gt;&gt;&gt;ERROR:humanService为null,无法更新&gt;&gt;&gt;&gt;&quot;);
-            throw new NotFoundException(&quot;HumanService为null,无法执行人员状态定时更新任务&quot;);
-        }
-        if (cloudSideClientManager == null) {
-            logger.error(&quot;&gt;&gt;&gt;&gt;ERROR:cloudSideClientManager为null,无法更新&gt;&gt;&gt;&gt;&quot;);
-            throw new NotFoundException(&quot;CloudSideClientManager为null,无法执行设备更新任务&quot;);
-        }
-        if (deviceService == null) {
-            logger.error(&quot;&gt;&gt;&gt;&gt;ERROR:deviceService为null,无法更新&gt;&gt;&gt;&gt;&quot;);
-            throw new NotFoundException(&quot;DeviceService为null,无法获取设备序列号&quot;);
-        }
-
-        // 1.更新过期访客
-        Map&lt;String, Object&gt; map = new HashMap&lt;&gt;();
-        map.put(&quot;visitStatus&quot;, Visitor_Expire);
-        boolean boo = visitorService.updateExpireVisitor(map);
-        logger.info(&quot;&gt;&gt;&gt;&gt;INFO:访客状态更新&gt;&gt;&gt;&gt;:&quot; + (boo ? &quot;成功&quot; : &quot;失败&quot;));
-        // 2.修改人员状态(humanStatus为2并且开通时间小于当前时间)修改状态为1
-        Map&lt;String, Object&gt; mp = new HashMap&lt;&gt;();
-        mp.put(&quot;humanStatus&quot;, Human_Active);
-        boolean bool = humanService.updatePrepareHuman(mp);
-        logger.info(&quot;&gt;&gt;&gt;&gt;INFO:人员状态更新&gt;&gt;&gt;&gt;:&quot; + (bool ? &quot;成功&quot; : &quot;失败&quot;));
-        // 3.下发指令让所有设备更新
-        //查询所有在线的设备--getOnlineDeviceList
-        List&lt;String&gt; serialList = deviceService.getOnlineDeviceAll();
-        for (String serial : serialList) {
-            cloudSideClientManager.clientRegister(serial,&quot;127.0.0.1&quot;, 50053);
-            // 2.调用通讯接口让区域内设备更新
-            CloudSideClientProxy ccp =cloudSideClientManager.getClient(serial);
-            List&lt;Person&gt; personList = deviceService.getPermissionPersonByDevice(serial);
-            if (ccp == null) {
-                logger.error(&quot;&gt;&gt;&gt;&gt;ERROR:序列号为&quot;+serial+&quot;的设备未上线!&gt;&gt;&gt;&gt;&quot;);
-                throw new DeviceOfflineException(&quot;序列号为&quot;+serial+&quot;的设备未上线!&quot;);
+                setParameters(cStatement, mappedStatement, boundSql, boundSql.getParameterObject());
+                rs = cStatement.executeQuery();
+                if (rs.next()) {
+                    totalCount = rs.getInt(1);
+                }
+            } catch (Exception e) {
+                logger.info(e.getMessage());
+            } finally {
+                try {
+                    rs.close();
+                    cStatement.close();
+                } catch (Exception e) {
+                    logger.error(&quot;SQLException&quot;, e);
+                }
             }
-            ccp.permissionUpdateAll(personList);
+            metaObject.setValue(&quot;delegate.boundSql.sql&quot;, pageSql);
+
+            myPage.setNumCount(totalCount);
         }
-    } catch (Exception e) {
-        logger.error(&quot;&gt;&gt;&gt;&gt;ERROR:解析信息发生异常&gt;&gt;&gt;&gt;&quot;);
+
     }
-}</code></pre><p>}<br>当然，也需要在application中添加bean：<br>    <bean id="springContextUtil" class="com.rh.quartz.SpringContextUtil" autowire="byName" lazy-init="false"></bean><br>这样就可以进行业务逻辑调用咯….</p>
+    //把执行流程交还给Mybatis
+    return invocation.proceed();
+}
+
+private void setParameters(PreparedStatement ps, MappedStatement mappedStatement, BoundSql boundSql,
+        Object parameterObject) throws SQLException {
+    ErrorContext.instance().activity(&quot;setting parameters&quot;).object(mappedStatement.getParameterMap().getId());
+    List&lt;ParameterMapping&gt; parameterMappings = boundSql.getParameterMappings();
+    if (parameterMappings != null) {
+        Configuration configuration = mappedStatement.getConfiguration();
+        TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
+        MetaObject metaObject = parameterObject == null ? null : configuration.newMetaObject(parameterObject);
+        for (int i = 0; i &lt; parameterMappings.size(); i++) {
+            ParameterMapping parameterMapping = parameterMappings.get(i);
+            if (parameterMapping.getMode() != ParameterMode.OUT) {
+                Object value;
+                String propertyName = parameterMapping.getProperty();
+                PropertyTokenizer prop = new PropertyTokenizer(propertyName);
+                if (parameterObject == null) {
+                    value = null;
+                } else if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
+                    value = parameterObject;
+                } else if (boundSql.hasAdditionalParameter(propertyName)) {
+                    value = boundSql.getAdditionalParameter(propertyName);
+                } else if (propertyName.startsWith(ForEachSqlNode.ITEM_PREFIX)
+                        &amp;&amp; boundSql.hasAdditionalParameter(prop.getName())) {
+                    value = boundSql.getAdditionalParameter(prop.getName());
+                    if (value != null) {
+                        value = configuration.newMetaObject(value)
+                                .getValue(propertyName.substring(prop.getName().length()));
+                    }
+                } else {
+                    value = metaObject == null ? null : metaObject.getValue(propertyName);
+                }
+                TypeHandler typeHandler = parameterMapping.getTypeHandler();
+                if (typeHandler == null) {
+                    throw new ExecutorException(&quot;There was no TypeHandler found for parameter &quot; + propertyName
+                            + &quot; of statement &quot; + mappedStatement.getId());
+                }
+                typeHandler.setParameter(ps, i + 1, value, parameterMapping.getJdbcType());
+            }
+        }
+    }
+
+}
+@Override
+public Object plugin(Object arg0) {
+
+    return null;
+}
+@Override
+public void setProperties(Properties arg0) {    
+
+}</code></pre><p>}</p>
+<p>3.分页辅助类 PageInfo</p>
+<p>public class PageInfo {<br>    // ———-分页———–<br>    private int pageSize;// 每页显示条数<br>    private int pageCurrentPage;// 第几页<br>    private int pageBegin;// 开始位置<br>    private int numCount;// 总条数<br>    private int pageTotal;// 总条数</p>
+<pre><code>private String orderField = &quot;&quot;;// 控制排序页面显示的
+private String orderDirection = &quot;&quot;;
+
+public PageInfo() {
+
+}
+
+public PageInfo(int pageSize, int pageCurrentPage) {
+    super();
+    this.pageSize = pageSize;
+    this.pageCurrentPage = pageCurrentPage;
+}
+
+public PageInfo(Map&lt;String, String&gt; map) {
+    if (map.get(&quot;pageNum&quot;) != null) {
+        this.setPageCurrentPage(this.pageCurrentPage = Integer.parseInt(map.get(&quot;pageNum&quot;)));// 要查询的页数
+    } else {
+        this.setPageCurrentPage(1);// 设置初始值
+    }
+
+    if (map.get(&quot;numPerPage&quot;) != null) {
+        this.setPageSize(Integer.parseInt(map.get(&quot;numPerPage&quot;)));// 每页显示条数
+    } else {
+        this.setPageSize(5);// 设置初始值
+    }
+
+    if (map.get(&quot;orderField&quot;) != null) {
+        this.setOrderField(map.get(&quot;orderField&quot;));
+    }
+
+    if (map.get(&quot;orderDirection&quot;) != null) {
+        this.setOrderDirection(map.get(&quot;orderDirection&quot;));
+    }
+
+}
+
+public int getPageCurrentPage() {
+    return pageCurrentPage;
+}
+
+public void setPageCurrentPage(int pageCurrentPage) {
+    this.pageCurrentPage = pageCurrentPage;
+}
+
+public int getNumCount() {
+    return numCount;
+}
+
+public void setNumCount(int numCount) {
+    this.numCount = numCount;
+}
+
+public int getPageTotal() {
+    return (numCount % pageSize &gt; 0) ? (numCount / pageSize + 1) : (numCount / pageSize);
+}
+
+public void setPageTotal(int pageTotal) {
+    this.pageTotal = pageTotal;
+}
+
+public int getPageSize() {
+    return pageSize;
+}
+
+public void setPageSize(int pageSize) {
+    this.pageSize = pageSize;
+}
+
+public int getPageBegin() {
+    return pageSize * (pageCurrentPage - 1);
+}
+
+public void setPageBegin(int pageBegin) {
+    this.pageBegin = pageBegin;
+}
+
+public String getOrderField() {
+    return orderField;
+}
+
+public void setOrderField(String orderField) {
+    this.orderField = orderField;
+}
+
+public String getOrderDirection() {
+    return orderDirection;
+}
+
+public void setOrderDirection(String orderDirection) {
+    this.orderDirection = orderDirection;
+}
+
+public static PageInfo getPage(int pageSize, int pageCurrentPage) {
+    return new PageInfo(pageSize, pageCurrentPage);
+}
+
+public static PageInfo getPage(Map map) {
+    return new PageInfo(map);
+}</code></pre><p>}</p>
 
             </div>
             <hr/>
@@ -723,9 +792,9 @@ public void run() {
             <br/>
             <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text"
                   property="dct:title" rel="dct:type">
-                    《定时任务中getBean踩坑》
+                    《基于《手写Mybatis分页插件》的学习笔记》
                 </span> 由
-            <a xmlns:cc="http://creativecommons.org/ns#" href="/2019/07/04/定时任务中getBean踩坑/" property="cc:attributionName"
+            <a xmlns:cc="http://creativecommons.org/ns#" href="/2019/07/19/基于《手写Mybatis分页插件》的学习笔记_20190718/" property="cc:attributionName"
                rel="cc:attributionURL">
                 Joe Peng
             </a> 采用
@@ -765,9 +834,10 @@ public void run() {
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="fa fa-dot-circle-o"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2019/07/19/基于《手写Mybatis分页插件》的学习笔记_20190718/">
                     <div class="card-image">
@@ -787,9 +857,9 @@ Mybatis三层：接口层，数据处理层，框架支撑层，引导层
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="fa fa-clock-o fa-fw icon-date"></i>2019-07-18
-                        </span>
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2019-07-18
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fa fa-bookmark fa-fw icon-category"></i>
@@ -802,6 +872,7 @@ Mybatis三层：接口层，数据处理层，框架支撑层，引导层
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -820,24 +891,24 @@ Mybatis三层：接口层，数据处理层，框架支撑层，引导层
                 下一篇&nbsp;<i class="fa fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2019/06/26/定时任务TimeTask/">
+                <a href="/2019/07/04/定时任务中getBean踩坑/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="定时任务TimeTask">
+                        <img src="/medias/featureimages/13.jpg" class="responsive-img" alt="定时任务中getBean踩坑">
                         
-                        <span class="card-title">定时任务TimeTask</span>
+                        <span class="card-title">定时任务中getBean踩坑</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            2019-06-25最近开发工作中，需要用到定时任务这一块，专门去研究了一下。目前网上给出的方案大体有两种，一种是用Quartz配合Spring框架来实现，还有一种主要依靠TimerTask类来解决。大体对比了一下，我觉得Quartz更适合
+                            2019-07-03在进行开发时，需要在定时任务中调用service层进行任务处理。因为TimerTask类并没有兼容Spring框架，所以无法使用Autowired进行注入。因为注入的话，@Autowired时候报空指针。所以只能使用最原
                         
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2019-06-25
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2019-07-03
                             </span>
                         <span class="publish-author">
                             

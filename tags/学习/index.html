@@ -4,8 +4,8 @@
 
 <head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
-    <meta name="keywords" content="分类: Java, 博客 Java 开发">
-    <meta name="description" content="分类: Java | BARZN的个人博客">
+    <meta name="keywords" content="标签: 学习, 博客 Java 开发">
+    <meta name="description" content="标签: 学习 | BARZN的个人博客">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -13,7 +13,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>分类: Java | BARZN的个人博客</title>
+    <title>标签: 学习 | BARZN的个人博客</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
@@ -286,24 +286,31 @@ $('.bg-cover').css('background-image', 'url(/medias/banner/' + new Date().getDay
 
     
 
-<div id="category-cloud" class="container chip-container">
+<div id="tags" class="container chip-container">
     <div class="card">
         <div class="card-content">
             <div class="tag-title center-align">
-                <i class="fa fa-bookmark"></i>&nbsp;&nbsp;文章分类
+                <i class="fa fa-tags"></i>&nbsp;&nbsp;文章标签
             </div>
             <div class="tag-chips">
                 
                 
-                
-                <a href="/categories/Java/" title="Java: 4">
+                <a href="/tags/日常工作/" title="日常工作: 3">
                     <span class="chip center-align waves-effect waves-light
-                             chip-active "
-                            style="background-color: #F9EBEA;">Java
-                        <span class="tag-length">4</span>
+                             chip-default "
+                            data-tagname="日常工作" style="background-color: #F9EBEA;">日常工作
+                        <span class="tag-length">3</span>
                     </span>
                 </a>
                 
+                
+                <a href="/tags/学习/" title="学习: 1">
+                    <span class="chip center-align waves-effect waves-light
+                             chip-active "
+                            data-tagname="学习" style="background-color: #F5EEF8;">学习
+                        <span class="tag-length">1</span>
+                    </span>
+                </a>
                 
             </div>
         </div>
@@ -315,7 +322,8 @@ $('.bg-cover').css('background-image', 'url(/medias/banner/' + new Date().getDay
     <article id="articles" class="container articles">
         <div class="row tags-posts">
             
-            <div class="article tag-post col s12 m6 l4" data-aos="zoom-in">
+            
+            <div class="article tag-post col s12 m6 l4" data-tags="学习" data-aos="fade-up">
                 <div class="card">
                     <a href="/2019/07/19/基于《手写Mybatis分页插件》的学习笔记_20190718/">
                         <div class="card-image tag-image">
@@ -327,13 +335,6 @@ $('.bg-cover').css('background-image', 'url(/medias/banner/' + new Date().getDay
                         </div>
                     </a>
                     <div class="card-content article-content">
-                        <div class="summary block-with-text">
-                            
-                                2019-07-18Mybatis基础：接口-&gt;xml select update方法-&gt;标签底层：动态代理，接口不能new，生成对应的具体实现类
-Mybatis三层：接口层，数据处理层，框架支撑层，引导层
-接口层：增删改查接口
-                            
-                        </div>
                         <div class="publish-info">
                             <span class="publish-date">
                                 <i class="fa fa-clock-o fa-fw icon-date"></i>2019-07-18
@@ -343,161 +344,13 @@ Mybatis三层：接口层，数据处理层，框架支撑层，引导层
                                 <i class="fa fa-bookmark fa-fw icon-category"></i>
                                 
                                 <a href="/categories/Java/" class="post-category" target="_blank">
-                                    Java
+                                Java
                                 </a>
                                 
                                 
                             </span>
                         </div>
                     </div>
-
-                    
-                    <div class="card-action article-tags">
-                        
-                        <a href="/tags/学习/" target="_blank">
-                            <span class="chip bg-color">学习</span>
-                        </a>
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="article tag-post col s12 m6 l4" data-aos="zoom-in">
-                <div class="card">
-                    <a href="/2019/07/04/定时任务中getBean踩坑/">
-                        <div class="card-image tag-image">
-                            
-                            
-                            <img src="/medias/featureimages/13.jpg" class="responsive-img" alt="定时任务中getBean踩坑">
-                            
-                            <span class="card-title">定时任务中getBean踩坑</span>
-                        </div>
-                    </a>
-                    <div class="card-content article-content">
-                        <div class="summary block-with-text">
-                            
-                                2019-07-03在进行开发时，需要在定时任务中调用service层进行任务处理。因为TimerTask类并没有兼容Spring框架，所以无法使用Autowired进行注入。因为注入的话，@Autowired时候报空指针。所以只能使用最原
-                            
-                        </div>
-                        <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2019-07-03
-                            </span>
-                            <span class="publish-author">
-                                
-                                <i class="fa fa-bookmark fa-fw icon-category"></i>
-                                
-                                <a href="/categories/Java/" class="post-category" target="_blank">
-                                    Java
-                                </a>
-                                
-                                
-                            </span>
-                        </div>
-                    </div>
-
-                    
-                    <div class="card-action article-tags">
-                        
-                        <a href="/tags/日常工作/" target="_blank">
-                            <span class="chip bg-color">日常工作</span>
-                        </a>
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="article tag-post col s12 m6 l4" data-aos="zoom-in">
-                <div class="card">
-                    <a href="/2019/06/26/定时任务TimeTask/">
-                        <div class="card-image tag-image">
-                            
-                            
-                            <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="定时任务TimeTask">
-                            
-                            <span class="card-title">定时任务TimeTask</span>
-                        </div>
-                    </a>
-                    <div class="card-content article-content">
-                        <div class="summary block-with-text">
-                            
-                                2019-06-25最近开发工作中，需要用到定时任务这一块，专门去研究了一下。目前网上给出的方案大体有两种，一种是用Quartz配合Spring框架来实现，还有一种主要依靠TimerTask类来解决。大体对比了一下，我觉得Quartz更适合
-                            
-                        </div>
-                        <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2019-06-25
-                            </span>
-                            <span class="publish-author">
-                                
-                                <i class="fa fa-bookmark fa-fw icon-category"></i>
-                                
-                                <a href="/categories/Java/" class="post-category" target="_blank">
-                                    Java
-                                </a>
-                                
-                                
-                            </span>
-                        </div>
-                    </div>
-
-                    
-                    <div class="card-action article-tags">
-                        
-                        <a href="/tags/日常工作/" target="_blank">
-                            <span class="chip bg-color">日常工作</span>
-                        </a>
-                        
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="article tag-post col s12 m6 l4" data-aos="zoom-in">
-                <div class="card">
-                    <a href="/2019/06/22/mapper-xml比较符错误/">
-                        <div class="card-image tag-image">
-                            
-                            
-                            <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="mapper.xml比较符错误">
-                            
-                            <span class="card-title">mapper.xml比较符错误</span>
-                        </div>
-                    </a>
-                    <div class="card-content article-content">
-                        <div class="summary block-with-text">
-                            
-                                2019-06-21今天在写mapper.xml文件时,遇到一个错误。因为之前都是在Navicat上写Sql语句，如下    UPDATE rh_visitor    SET visit_status = 0    WHERE       
-                            
-                        </div>
-                        <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2019-06-21
-                            </span>
-                            <span class="publish-author">
-                                
-                                <i class="fa fa-bookmark fa-fw icon-category"></i>
-                                
-                                <a href="/categories/Java/" class="post-category" target="_blank">
-                                    Java
-                                </a>
-                                
-                                
-                            </span>
-                        </div>
-                    </div>
-
-                    
-                    <div class="card-action article-tags">
-                        
-                        <a href="/tags/日常工作/" target="_blank">
-                            <span class="chip bg-color">日常工作</span>
-                        </a>
-                        
-                    </div>
-                    
                 </div>
             </div>
             
