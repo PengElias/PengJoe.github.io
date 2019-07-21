@@ -5,7 +5,7 @@
 <head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
     <meta name="keywords" content="mapper.xml比较符错误, 博客 Java 开发">
-    <meta name="description" content="2019-06-21今天在写mapper.xml文件时,遇到一个错误。因为之前都是在Navicat上写Sql语句，如下    UPDATE rh_visitor    SET visit_status = 0    WHERE       ">
+    <meta name="description" content="今天在写mapper.xml文件时,遇到一个错误。因为之前都是在Navicat上写Sql语句，如下    UPDATE rh_visitor    SET visit_status = 0    WHERE        expiratio">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -417,7 +417,7 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>2019-06-21<br>今天在写mapper.xml文件时,遇到一个错误。因为之前都是在Navicat上写Sql语句，如下<br>    UPDATE rh_visitor<br>    SET visit_status = 0<br>    WHERE<br>        expiration_time &lt; current_timestamp( )<br>        AND visit_status = 1<br>        AND isvalid = 1;<br>所以直接就把这个语句粘贴到xml文件中，一直在报错。刚开始以为是expiration_time这个字段用的是datetime和now()在xml中无法识别的问题，搞了好久，都用上了unix_timestamp()函数，终究还是报错。最后，请教下了同事，才知道犯了低级错误。xml文件中的比比较符是需要用转义字符的，为了省事，直接用CDATA全部包起来，代码如下：<br><update id="updateExpireVisitor" parametertype="map"><br>        UPDATE rh_visitor<br>        <set><br>            <if test="visitStatus != null"><br>                visit_status = #{visitStatus}<br>            </if><br>        </set><br>        WHERE<br>        <!--[CDATA[expiration_time < now( )]]--><br>        AND visit_status = 1<br>        AND isvalid = 1<br></update><br>印象中，以前也遇到过这种错误。当时也搞了好久，这次特地记下来，长长记性!!!</p>
+                <p>今天在写mapper.xml文件时,遇到一个错误。因为之前都是在Navicat上写Sql语句，如下<br>    UPDATE rh_visitor<br>    SET visit_status = 0<br>    WHERE<br>        expiration_time &lt; current_timestamp( )<br>        AND visit_status = 1<br>        AND isvalid = 1;<br>所以直接就把这个语句粘贴到xml文件中，一直在报错。刚开始以为是expiration_time这个字段用的是datetime和now()在xml中无法识别的问题，搞了好久，都用上了unix_timestamp()函数，终究还是报错。最后，请教下了同事，才知道犯了低级错误。xml文件中的比比较符是需要用转义字符的，为了省事，直接用CDATA全部包起来，代码如下：<br><update id="updateExpireVisitor" parametertype="map"><br>        UPDATE rh_visitor<br>        <set><br>            <if test="visitStatus != null"><br>                visit_status = #{visitStatus}<br>            </if><br>        </set><br>        WHERE<br>        <!--[CDATA[expiration_time < now( )]]--><br>        AND visit_status = 1<br>        AND isvalid = 1<br></update><br>印象中，以前也遇到过这种错误。当时也搞了好久，这次特地记下来，长长记性!!!</p>
 
             </div>
             <hr/>
@@ -634,7 +634,7 @@
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            2019-06-25最近开发工作中，需要用到定时任务这一块，专门去研究了一下。目前网上给出的方案大体有两种，一种是用Quartz配合Spring框架来实现，还有一种主要依靠TimerTask类来解决。大体对比了一下，我觉得Quartz更适合
+                            最近开发工作中，需要用到定时任务这一块，专门去研究了一下。目前网上给出的方案大体有两种，一种是用Quartz配合Spring框架来实现，还有一种主要依靠TimerTask类来解决。大体对比了一下，我觉得Quartz更适合像那些需要经常添加定
                         
                     </div>
                     <div class="publish-info">
@@ -683,7 +683,7 @@
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            2019-06-21今天在写mapper.xml文件时,遇到一个错误。因为之前都是在Navicat上写Sql语句，如下    UPDATE rh_visitor    SET visit_status = 0    WHERE       
+                            今天在写mapper.xml文件时,遇到一个错误。因为之前都是在Navicat上写Sql语句，如下    UPDATE rh_visitor    SET visit_status = 0    WHERE        expiratio
                         
                     </div>
                     <div class="publish-info">
